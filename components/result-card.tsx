@@ -1,4 +1,4 @@
-import { Quote } from "lucide-react"
+import { CalendarDays, Clock, Quote } from "lucide-react"
 import { LevelTag } from "@/components/level-tag"
 import type { Restaurant } from "@/lib/restaurants"
 
@@ -33,10 +33,27 @@ export function ResultCard({ restaurant }: { restaurant: Restaurant }) {
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500 rounded-3xl border border-border bg-card p-6 shadow-lg">
-      <p className="text-sm font-medium text-primary">오늘의 추천 식당</p>
-      <h2 className="mt-1 font-display text-3xl leading-tight text-balance text-card-foreground">
-        {restaurant.name}
-      </h2>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-primary">오늘의 추천 식당</p>
+          <h2 className="mt-1 font-display text-3xl leading-tight text-balance text-card-foreground break-keep">
+            {restaurant.name}
+          </h2>
+        </div>
+
+        <dl className="shrink-0 space-y-1.5 text-right text-xs leading-relaxed text-muted-foreground sm:text-sm">
+          <div className="flex items-start justify-end gap-1.5">
+            <CalendarDays className="size-3.5 shrink-0 translate-y-0.5 text-primary/70" aria-hidden="true" />
+            <dt className="sr-only">영업일</dt>
+            <dd className="break-keep">{restaurant.days}</dd>
+          </div>
+          <div className="flex items-start justify-end gap-1.5">
+            <Clock className="size-3.5 shrink-0 translate-y-0.5 text-primary/70" aria-hidden="true" />
+            <dt className="sr-only">영업시간</dt>
+            <dd className="break-keep">{restaurant.hours}</dd>
+          </div>
+        </dl>
+      </div>
 
       <div className="mt-5 rounded-2xl bg-secondary px-4 py-3">
         <p className="text-sm font-medium text-muted-foreground">대표 메뉴</p>
