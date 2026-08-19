@@ -28,15 +28,42 @@ function parseMenu(raw: string): MenuItem[] {
     })
 }
 
+/**
+ * Split the raw hours string into the main operating hours and an optional
+ * note (e.g. "(브레이크타임 15:30-17:00)") so the note can be rendered on the
+ * line directly below the hours instead of overflowing on one line.
+ */
+function parseHours(raw: string): { main: string; note: string } {
+  const match = raw.match(/^(.*?)\s*\((.+)\)\s*$/)
+  if (match) {
+    return { main: match[1].trim(), note: match[2].trim() }
+  }
+  return { main: raw.trim(), note: "" }
+}
+
+/**
+ * Scale down the restaurant name for long names so it doesn't collide with the
+ * date/time column on the right. Spaces let the name wrap onto the next line.
+ */
+function nameSizeClass(name: string): string {
+  const len = name.replace(/\s/g, "").length
+  if (len >= 10) return "text-xl"
+  if (len >= 7) return "text-2xl"
+  return "text-3xl"
+}
+
 export function ResultCard({ restaurant }: { restaurant: Restaurant }) {
   const items = parseMenu(restaurant.menu)
+  const { main: hoursMain, note: hoursNote } = parseHours(restaurant.hours)
 
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500 rounded-3xl border border-border bg-card p-6 shadow-lg">
       <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-primary">오늘의 추천 식당</p>
-          <h2 className="mt-1 font-display text-3xl leading-tight text-balance text-card-foreground break-keep">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-primary">오늘의 식당</p>
+          <h2
+            className={`mt-1 font-display ${nameSizeClass(restaurant.name)} leading-tight text-balance text-card-foreground break-keep`}
+          >
             {restaurant.name}
           </h2>
         </div>
@@ -50,7 +77,12 @@ export function ResultCard({ restaurant }: { restaurant: Restaurant }) {
           <div className="flex items-start justify-end gap-1.5">
             <Clock className="size-3.5 shrink-0 translate-y-0.5 text-primary/70" aria-hidden="true" />
             <dt className="sr-only">영업시간</dt>
-            <dd className="break-keep">{restaurant.hours}</dd>
+            <dd className="break-keep">
+              {hoursMain}
+              {hoursNote ? (
+                <span className="mt-0.5 block text-muted-foreground/80">{hoursNote}</span>
+              ) : null}
+            </dd>
           </div>
         </dl>
       </div>
